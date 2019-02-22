@@ -61,17 +61,25 @@ class TimerAppState extends State<TimerApp> {
               Container(
                 margin: EdgeInsets.only(top: 20),
                 child: RaisedButton(
-                  child: Text(isActive ? 'STOP' : 'START'),
+                  child: Text(
+                      isActive ? 'STOP' : 'START',
+                      style: new TextStyle(
+                          color: Colors.white,
+                          fontStyle: FontStyle.italic,
+                          fontSize: 20.0)
+                    ),
                   onPressed: () {
                     setState(() {
                       isActive = !isActive;
                     });
                   },
+                  color: !isActive ? Colors.lightGreen : Colors.redAccent,
                 ),
               ),
               Container(
                 child: secondsPassed > 0 && !isActive ? RaisedButton(
-                  child: Text("Reset"),
+                  child: Text("Reset", style: new TextStyle(color: Colors.white, fontStyle: FontStyle.italic, fontSize: 20.0)),
+                    color: Colors.deepOrange,
                     onPressed: (){
                       setState(() {
                         secondsPassed = 0;
