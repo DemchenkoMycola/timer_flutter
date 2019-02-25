@@ -1,135 +1,56 @@
 import 'package:flutter/material.dart';
-import 'dart:async';
+import './Timer.dart' as timer;
+import './History.dart' as history;
 
-void main() => runApp(TimerApp());
-
-class TimerApp extends StatefulWidget {
-  @override
-  State<StatefulWidget> createState() {
-    return new TimerAppState();
-  }
+void main() {
+  runApp(new MaterialApp(
+      home: new MyTabs()
+  ));
 }
 
-class TimerAppState extends State<TimerApp> {
-  static const duration = const Duration(seconds: 1);
+class MyTabs extends StatefulWidget{
+  @override
+  MyTabsState createState() => new MyTabsState();
+}
 
-  int secondsPassed = 0;
-  bool isActive = false;
+class MyTabsState extends State<MyTabs> with SingleTickerProviderStateMixin{
 
-  Timer timer;
+  TabController controller;
 
-  void handleTick() {
-    if (isActive) {
-      setState(() {
-        secondsPassed = secondsPassed + 1;
-      });
-    }
+  @override
+  void initState(){
+    super.initState();
+    controller = new TabController(vsync: this, length: 3);
   }
 
   @override
-  Widget build(BuildContext context) {
-    if (timer == null)
-      timer = Timer.periodic(duration, (Timer t) {
-        handleTick();
-      });
+  void dispose(){
+    controller.dispose();
+    super.dispose();
+  }
 
-    int seconds = secondsPassed % 60;
-    int minutes = secondsPassed ~/ 60;
-    int hours = secondsPassed ~/ (60 * 60);
-
-    return MaterialApp(
-      title: 'Welcome to Flutter',
-      home: Scaffold(
-        appBar: AppBar(
-          title: Text('Timer'),
+  @override
+  Widget build(BuildContext context){
+    return new Scaffold(
+        appBar: new AppBar(title: new Text("Pages"), backgroundColor: Colors.indigo,
         ),
-        body: Center(
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
+        bottomNavigationBar: new Material(
+            color: Colors.indigo,
+            child: new TabBar(
+                controller: controller,
+                tabs: <Tab>[
+                  new Tab(icon: new Icon(Icons.home)),
+                  new Tab(icon: new Icon(Icons.history)),
+                ]
+            )
+        ),
+        body: new TabBarView(
+            controller: controller,
             children: <Widget>[
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: <Widget>[
-                  CustomTextContainer(
-                      label: 'HRS', value: hours.toString().padLeft(2, '0')),
-                  CustomTextContainer(
-                      label: 'MIN', value: minutes.toString().padLeft(2, '0')),
-                  CustomTextContainer(
-                      label: 'SEC', value: seconds.toString().padLeft(2, '0')),
-                ],
-              ),
-              Container(
-                margin: EdgeInsets.only(top: 20),
-                child: RaisedButton(
-                  child: Text(
-                      isActive ? 'STOP' : 'START',
-                      style: new TextStyle(
-                          color: Colors.white,
-                          fontStyle: FontStyle.italic,
-                          fontSize: 20.0)
-                    ),
-                  onPressed: () {
-                    setState(() {
-                      isActive = !isActive;
-                    });
-                  },
-                  color: !isActive ? Colors.lightGreen : Colors.redAccent,
-                ),
-              ),
-              Container(
-                child: secondsPassed > 0 && !isActive ? RaisedButton(
-                  child: Text("Reset", style: new TextStyle(color: Colors.white, fontStyle: FontStyle.italic, fontSize: 20.0)),
-                    color: Colors.deepOrange,
-                    onPressed: (){
-                      setState(() {
-                        secondsPassed = 0;
-                      });
-                    }
-                ):
-                null
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-class CustomTextContainer extends StatelessWidget {
-  CustomTextContainer({this.label, this.value});
-
-  final String label;
-  final String value;
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      margin: EdgeInsets.symmetric(horizontal: 5),
-      padding: EdgeInsets.all(20),
-      decoration: new BoxDecoration(
-        borderRadius: new BorderRadius.circular(10),
-        color: Colors.black87,
-      ),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: <Widget>[
-          Text(
-            '$value',
-            style: TextStyle(
-              color: Colors.white,
-              fontSize: 54,
-              fontWeight: FontWeight.bold,
-            ),
-          ),
-          Text(
-            '$label',
-            style: TextStyle(
-              color: Colors.white70,
-            ),
-          )
-        ],
-      ),
+              new timer.TimerApp(),
+              new history.History(),
+            ]
+        )
     );
   }
 }
